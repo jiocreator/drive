@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // প্রয়োজনীয় HTML এলিমেন্টগুলো সিলেক্ট করা
     const contentContainer = document.getElementById('content-container');
     const gridViewBtn = document.getElementById('grid-view-btn');
     const listViewBtn = document.getElementById('list-view-btn');
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentViewItems = [];
     let longPressTimer;
 
-    // ১. M3U প্লেলিস্ট লোড এবং পার্স করা
     async function fetchAndParseM3U() {
         try {
             const response = await fetch('playlist.m3u');
@@ -50,11 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ২. DOM-এ কন্টেন্ট দেখানো
     function renderContent(items) {
         currentViewItems = items;
         contentContainer.innerHTML = '';
-        if (items.length === 0) {
+        if (!items || items.length === 0) {
             contentContainer.innerHTML = `<p style="text-align:center;">No items to display.</p>`;
             return;
         }
@@ -66,17 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
             
             itemElement.innerHTML = isGridView ? getGridViewHTML(item) : getListViewHTML(item);
             
-            // আইটেমটি ফোল্ডার নাকি ফাইল সেই অনুযায়ী ইভেন্ট যোগ করা
-            if (item.type === 'folder') {
+            if (item.isFolder) {
                 itemElement.addEventListener('click', () => openFolder(item.title));
             } else {
                 itemElement.addEventListener('click', () => openPlayer(item));
-                // স্টার করার জন্য লং প্রেস ইভেন্ট
                 ['mousedown', 'touchstart'].forEach(evt => {
                     itemElement.addEventListener(evt, (e) => {
                         if (e.type === 'mousedown' && e.button !== 0) return;
-                        longPressTimer = setTimeout(() => toggleStar(item), 1500);
-                    });
+                        longPressTimer = setTimeout(() => {
+                            toggleStar(item);
+                            alert(`'${item.title}' has been ${starredItems.includes(item.id) ? 'added to' : 'removed from'} Starred.`);
+                        }, 1500);
+                    }, { passive: true });
                 });
                 ['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
                     itemElement.addEventListener(evt, () => clearTimeout(longPressTimer));
@@ -85,26 +83,24 @@ document.addEventListener('DOMContentLoaded', () => {
             contentContainer.appendChild(itemElement);
         });
     }
-
-    // ৩. বিভিন্ন ভিউয়ের জন্য HTML তৈরি
+    
     const getGridViewHTML = (item) => {
-        if (item.type === 'folder') {
+        if (item.isFolder) {
             return `<div class="item-icon"><i class="fas fa-folder"></i></div><div class="item-name">${item.title}</div>`;
         }
         return `<img src="${item.logo}" class="item-thumbnail" alt="${item.title}" onerror="this.parentElement.innerHTML = '<div class=\\'item-icon\\'><i class=\\'fas fa-file-video\\'></i></div><div class=\\'item-name\\'>${item.title}</div>'"><div class="item-name">${item.title}</div>`;
     };
 
     const getListViewHTML = (item) => {
-        const iconClass = item.type === 'folder' ? 'fa-folder' : 'fa-file-video';
+        const iconClass = item.isFolder ? 'fa-folder' : 'fa-file-video';
         return `
             <div class="item-icon"><i class="fas ${iconClass}"></i></div>
             <div class="item-details">
                 <div class="item-name">${item.title}</div>
-                ${item.type !== 'folder' ? `<div class="modified-date">Modified ${item.modified}</div>` : ''}
+                ${!item.isFolder ? `<div class="modified-date">Modified ${item.modified}</div>` : ''}
             </div>`;
     };
 
-    // ৪. প্লেয়ারের কার্যকারিতা
     function openPlayer(item) {
         clearTimeout(longPressTimer);
         modal.style.display = 'flex';
@@ -132,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (videoPlayer) videoPlayer.pause();
     }
 
-    // ৫. স্টার/ফেভারিট করার ফাংশন
     function toggleStar(item) {
         const itemIndex = starredItems.indexOf(item.id);
         if (itemIndex > -1) {
@@ -141,17 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
             starredItems.push(item.id);
         }
         localStorage.setItem('starredItems', JSON.stringify(starredItems));
-        // স্টার করার পর কোনো ভিজ্যুয়াল পরিবর্তন হবে না, তাই re-render প্রয়োজন নেই
     }
 
-    // ৬. ফোল্ডার খোলার ফাংশন
     function openFolder(folderName) {
         headerTitle.textContent = folderName;
         renderContent(allContent.filter(item => item.group === folderName));
         showBackButton();
     }
 
-    // ৭. নিচের নেভিগেশন নিয়ন্ত্রণ
     function handleNavigation(targetId) {
         navItems.forEach(btn => btn.classList.remove('active'));
         document.getElementById(targetId)?.classList.add('active');
@@ -174,22 +166,23 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'files-btn':
                 headerTitle.textContent = 'Files';
                 const categories = [...new Set(allContent.map(item => item.group))];
-                const folderItems = categories.map(cat => ({ title: cat, type: 'folder' }));
+                const folderItems = categories.map(cat => ({ title: cat, isFolder: true }));
                 renderContent(folderItems);
                 break;
         }
     }
 
-    // ৮. Back বাটন দেখানো ও লুকানো
     function showBackButton() {
         backBtnContainer.innerHTML = `<button id="back-btn"><i class="fas fa-arrow-left"></i></button>`;
-        document.getElementById('back-btn').addEventListener('click', () => handleNavigation('files-btn'));
+        document.getElementById('back-btn').addEventListener('click', () => {
+            const currentActiveId = document.querySelector('.nav-item.active')?.id || 'home-btn';
+            handleNavigation(currentActiveId);
+        });
     }
     function hideBackButton() {
         backBtnContainer.innerHTML = '';
     }
 
-    // --- প্রাথমিক সেটআপ এবং ইভেন্ট লিসেনার ---
     gridViewBtn.addEventListener('click', () => {
         if (contentContainer.classList.contains('grid-view')) return;
         contentContainer.className = 'grid-view';
@@ -206,13 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     modal.addEventListener('click', closePlayer);
-    modalContent.addEventListener('click', (e) => e.stopPropagation()); // প্লেয়ারের উপর ক্লিক করলে যেন বন্ধ না হয়
+    modalContent.addEventListener('click', (e) => e.stopPropagation());
 
     navItems.forEach(item => item.addEventListener('click', (e) => {
         e.preventDefault();
         handleNavigation(e.currentTarget.id);
     }));
     
-    // অ্যাপ্লিকেশন শুরু করা
     fetchAndParseM3U();
 });
