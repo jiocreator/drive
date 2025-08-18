@@ -1,1 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Drive - GitHub Based</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+    }
+    header {
+      background: #4285f4;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      padding: 15px;
+    }
+    .file-card {
+      background: white;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .file-card:hover {
+      transform: scale(1.05);
+    }
+    .file-card video, .file-card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .filename {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: #555;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a.active {
+      color: #4285f4;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
 
+<header>📂 My Drive</header>
+
+<div class="file-grid">
+  <div class="file-card">
+    <img src="https://img.icons8.com/color/96/000000/video-file.png" alt="video">
+    <div class="filename">Dirilis Ertugrul - S02E20.mp4</div>
+  </div>
+  <div class="file-card">
+    <img src="https://img.icons8.com/color/96/000000/video-file.png" alt="video">
+    <div class="filename">Dirilis Ertugrul - S02E19.mp4</div>
+  </div>
+  <div class="file-card">
+    <img src="https://img.icons8.com/color/96/000000/video-file.png" alt="video">
+    <div class="filename">Dirilis Ertugrul - S02E18.mp4</div>
+  </div>
+  <div class="file-card">
+    <img src="https://img.icons8.com/color/96/000000/video-file.png" alt="video">
+    <div class="filename">Dirilis Ertugrul - S02E17.mp4</div>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <a href="#" class="active">🏠<span>Home</span></a>
+  <a href="#">⭐<span>Starred</span></a>
+  <a href="#">👥<span>Shared</span></a>
+  <a href="#">📂<span>Files</span></a>
+</div>
+
+</body>
+</html>
