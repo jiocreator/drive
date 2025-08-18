@@ -1,161 +1,155 @@
-/* বেসিক স্টাইল */
+:root {
+    --primary-color: #0d6efd;
+    --background-color: #f0f2f5;
+    --card-bg-color: #fff;
+    --text-color: #333;
+    --icon-color: #888;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color: #f0f2f5;
-    color: #333;
+    background-color: var(--background-color);
+    color: var(--text-color);
     padding-bottom: 70px;
 }
 
-/* হেডার স্টাইল */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: #fff;
+    background-color: var(--card-bg-color);
     border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 20px;
-}
+header h1 { margin: 0; font-size: 20px; }
 
 .view-controls button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #888;
-    margin-left: 10px;
+    background: none; border: none; font-size: 20px;
+    cursor: pointer; color: var(--icon-color); margin-left: 10px;
 }
+.view-controls button.active { color: var(--primary-color); }
 
-.view-controls button.active {
-    color: #0d6efd;
-}
+main { padding: 15px; }
 
-/* কন্টেন্ট কন্টেইনার */
-main {
-    padding: 15px;
-}
-
-/* --- গ্রিড ভিউ স্টাইল --- */
+/* --- Grid View --- */
 .grid-view {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
 }
-
 .grid-view .content-item {
-    background-color: #fff;
+    background-color: var(--card-bg-color);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: center;
-    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     cursor: pointer;
+    overflow: hidden; /* থাম্বনেইলের জন্য */
+    position: relative;
 }
-
-.grid-view .item-icon {
-    font-size: 50px;
-    margin-bottom: 10px;
+.grid-view .item-thumbnail {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    background-color: #eee;
 }
-
-/* ফোল্ডারের জন্য আলাদা রঙ */
-.grid-view .folder-icon {
-    color: #ffca28; /* হলুদ রঙ */
-}
-
-/* ফাইলের জন্য আলাদা রঙ */
-.grid-view .file-icon {
-    color: #7b2cbf; /* বেগুনি রঙ */
-}
-
-
 .grid-view .item-name {
     font-size: 14px;
+    padding: 8px;
     word-break: break-word;
 }
 
-/* --- লিস্ট ভিউ স্টাইল --- */
-.list-view {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
+/* --- List View --- */
+.list-view { display: flex; flex-direction: column; gap: 10px; }
 .list-view .content-item {
     display: flex;
     align-items: center;
-    background-color: #fff;
+    background-color: var(--card-bg-color);
     border-radius: 8px;
     padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
 }
-
 .list-view .item-icon {
     font-size: 24px;
+    color: var(--primary-color);
     margin-right: 15px;
 }
+.list-view .item-details { display: flex; flex-direction: column; }
+.list-view .item-name { font-size: 16px; }
+.list-view .modified-date { font-size: 12px; color: var(--icon-color); margin-top: 2px; }
 
-/* ফোল্ডারের জন্য আলাদা রঙ */
-.list-view .folder-icon {
-    color: #ffca28;
+/* Star Icon on Items */
+.star-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #ffd700;
+    font-size: 18px;
+    text-shadow: 0 0 3px black;
 }
 
-/* ফাইলের জন্য আলাদা রঙ */
-.list-view .file-icon {
-    color: #c92a2a;
-}
-
-.list-view .item-name {
-    font-size: 16px;
-}
-
-/* লিস্ট ভিউতে ফোল্ডারের তথ্যের জন্য */
-.item-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.item-details .modified-date {
-    font-size: 12px;
-    color: #888;
-    margin-top: 2px;
-}
-
-
-/* নিচের নেভিগেশন বার */
-.bottom-nav {
+/* --- Player Modal --- */
+.modal-overlay {
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
-    justify-content: space-around;
-    background-color: #ffffff;
-    border-top: 1px solid #ddd;
-    padding: 5px 0;
-}
-
-.nav-item {
-    display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    text-decoration: none;
-    color: #888;
-    padding: 5px;
+    z-index: 1000;
+}
+.modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    height: 0;
+    padding-bottom: 50.25%; /* 16:9 aspect ratio */
+    background-color: #000;
+}
+.modal-content iframe, .modal-content .video-js {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.close-btn {
+    position: absolute;
+    top: -35px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
 }
 
-.nav-item i {
-    font-size: 20px;
+/* --- Bottom Nav --- */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: space-around;
+    background-color: #ffffff; border-top: 1px solid #ddd; padding: 5px 0;
 }
+.nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    text-decoration: none; color: var(--icon-color); padding: 5px;
+}
+.nav-item i { font-size: 20px; }
+.nav-item span { font-size: 12px; margin-top: 4px; }
+.nav-item.active { color: var(--primary-color); }
 
-.nav-item span {
-    font-size: 12px;
-    margin-top: 4px;
+/* --- Spinner --- */
+.spinner {
+    border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-color);
+    border-radius: 50%; width: 40px; height: 40px;
+    animation: spin 1s linear infinite; margin: 50px auto;
 }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.nav-item.active {
-    color: #0d6efd;
-}
