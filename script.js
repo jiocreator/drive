@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const gridViewBtn = document.getElementById('grid-view-btn');
     const listViewBtn = document.getElementById('list-view-btn');
     const headerTitle = document.getElementById('header-title');
+    const backBtnContainer = document.getElementById('back-button-container');
     const modal = document.getElementById('player-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
+    const modalContent = document.querySelector('.modal-content');
     const iframePlayer = document.getElementById('iframe-player');
     const videoJsPlayerEl = document.getElementById('video-js-player');
     const navItems = document.querySelectorAll('.nav-item');
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             allContent = items;
-            handleNavigation('home-btn'); // ডিফল্টভাবে Home ভিউ দেখানো
+            handleNavigation('home-btn');
         } catch (error) {
             contentContainer.innerHTML = `<p style="text-align:center; color: red;">Error: ${error.message}</p>`;
         }
@@ -64,45 +65,48 @@ document.addEventListener('DOMContentLoaded', () => {
             itemElement.className = 'content-item';
             
             itemElement.innerHTML = isGridView ? getGridViewHTML(item) : getListViewHTML(item);
-
-            if (starredItems.includes(item.id)) {
-                itemElement.insertAdjacentHTML('beforeend', '<div class="star-indicator"><i class="fas fa-star"></i></div>');
-            }
-
-            // ইভেন্ট লিসেনার যোগ করা
-            itemElement.addEventListener('click', () => openPlayer(item));
             
-            // স্টার করার জন্য লং প্রেস ইভেন্ট
-            ['mousedown', 'touchstart'].forEach(evt => {
-                itemElement.addEventListener(evt, (e) => {
-                    if (e.type === 'mousedown' && e.button !== 0) return; // শুধু লেফট ক্লিক
-                    longPressTimer = setTimeout(() => toggleStar(item), 1500);
+            // আইটেমটি ফোল্ডার নাকি ফাইল সেই অনুযায়ী ইভেন্ট যোগ করা
+            if (item.type === 'folder') {
+                itemElement.addEventListener('click', () => openFolder(item.title));
+            } else {
+                itemElement.addEventListener('click', () => openPlayer(item));
+                // স্টার করার জন্য লং প্রেস ইভেন্ট
+                ['mousedown', 'touchstart'].forEach(evt => {
+                    itemElement.addEventListener(evt, (e) => {
+                        if (e.type === 'mousedown' && e.button !== 0) return;
+                        longPressTimer = setTimeout(() => toggleStar(item), 1500);
+                    });
                 });
-            });
-            ['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
-                itemElement.addEventListener(evt, () => clearTimeout(longPressTimer));
-            });
-
+                ['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
+                    itemElement.addEventListener(evt, () => clearTimeout(longPressTimer));
+                });
+            }
             contentContainer.appendChild(itemElement);
         });
     }
 
-    // গ্রিড ভিউ আইটেমের জন্য HTML
-    const getGridViewHTML = (item) => `
-        <img src="${item.logo}" class="item-thumbnail" alt="${item.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTUwIDEwMCI+PHJlY3Qgd2lkdGg9IjE1MCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNlYWVhZWEiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjY2NjIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+'">
-        <div class="item-name">${item.title}</div>`;
+    // ৩. বিভিন্ন ভিউয়ের জন্য HTML তৈরি
+    const getGridViewHTML = (item) => {
+        if (item.type === 'folder') {
+            return `<div class="item-icon"><i class="fas fa-folder"></i></div><div class="item-name">${item.title}</div>`;
+        }
+        return `<img src="${item.logo}" class="item-thumbnail" alt="${item.title}" onerror="this.parentElement.innerHTML = '<div class=\\'item-icon\\'><i class=\\'fas fa-file-video\\'></i></div><div class=\\'item-name\\'>${item.title}</div>'"><div class="item-name">${item.title}</div>`;
+    };
 
-    // লিস্ট ভিউ আইটেমের জন্য HTML
-    const getListViewHTML = (item) => `
-        <div class="item-icon"><i class="fas fa-file-video"></i></div>
-        <div class="item-details">
-            <div class="item-name">${item.title}</div>
-            <div class="modified-date">Modified ${item.modified}</div>
-        </div>`;
+    const getListViewHTML = (item) => {
+        const iconClass = item.type === 'folder' ? 'fa-folder' : 'fa-file-video';
+        return `
+            <div class="item-icon"><i class="fas ${iconClass}"></i></div>
+            <div class="item-details">
+                <div class="item-name">${item.title}</div>
+                ${item.type !== 'folder' ? `<div class="modified-date">Modified ${item.modified}</div>` : ''}
+            </div>`;
+    };
 
-    // ৩. প্লেয়ারের কার্যকারিতা
+    // ৪. প্লেয়ারের কার্যকারিতা
     function openPlayer(item) {
-        clearTimeout(longPressTimer); // ক্লিক করলে যেন স্টার না হয়
+        clearTimeout(longPressTimer);
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
 
@@ -128,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (videoPlayer) videoPlayer.pause();
     }
 
-    // ৪. স্টার/ফেভারিট করার ফাংশন
+    // ৫. স্টার/ফেভারিট করার ফাংশন
     function toggleStar(item) {
         const itemIndex = starredItems.indexOf(item.id);
         if (itemIndex > -1) {
@@ -137,13 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
             starredItems.push(item.id);
         }
         localStorage.setItem('starredItems', JSON.stringify(starredItems));
-        renderContent(currentViewItems); // বর্তমান ভিউ রি-রেন্ডার করা
+        // স্টার করার পর কোনো ভিজ্যুয়াল পরিবর্তন হবে না, তাই re-render প্রয়োজন নেই
     }
 
-    // ৫. নিচের নেভিগেশন নিয়ন্ত্রণ
+    // ৬. ফোল্ডার খোলার ফাংশন
+    function openFolder(folderName) {
+        headerTitle.textContent = folderName;
+        renderContent(allContent.filter(item => item.group === folderName));
+        showBackButton();
+    }
+
+    // ৭. নিচের নেভিগেশন নিয়ন্ত্রণ
     function handleNavigation(targetId) {
         navItems.forEach(btn => btn.classList.remove('active'));
         document.getElementById(targetId)?.classList.add('active');
+        hideBackButton();
 
         switch(targetId) {
             case 'home-btn':
@@ -157,13 +169,24 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'shared-btn':
                  headerTitle.textContent = 'Share';
                  navigator.clipboard.writeText(window.location.href).then(() => alert('Website link copied!'));
-                 renderContent([]); // শেয়ারের জন্য কোনো কন্টেন্ট নেই
+                 renderContent([]);
                 break;
             case 'files-btn':
-                headerTitle.textContent = 'All Files';
-                renderContent(allContent);
+                headerTitle.textContent = 'Files';
+                const categories = [...new Set(allContent.map(item => item.group))];
+                const folderItems = categories.map(cat => ({ title: cat, type: 'folder' }));
+                renderContent(folderItems);
                 break;
         }
+    }
+
+    // ৮. Back বাটন দেখানো ও লুকানো
+    function showBackButton() {
+        backBtnContainer.innerHTML = `<button id="back-btn"><i class="fas fa-arrow-left"></i></button>`;
+        document.getElementById('back-btn').addEventListener('click', () => handleNavigation('files-btn'));
+    }
+    function hideBackButton() {
+        backBtnContainer.innerHTML = '';
     }
 
     // --- প্রাথমিক সেটআপ এবং ইভেন্ট লিসেনার ---
@@ -174,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
         listViewBtn.classList.remove('active');
         renderContent(currentViewItems);
     });
-
     listViewBtn.addEventListener('click', () => {
         if (contentContainer.classList.contains('list-view')) return;
         contentContainer.className = 'list-view';
@@ -183,7 +205,9 @@ document.addEventListener('DOMContentLoaded', () => {
         renderContent(currentViewItems);
     });
 
-    closeModalBtn.addEventListener('click', closePlayer);
+    modal.addEventListener('click', closePlayer);
+    modalContent.addEventListener('click', (e) => e.stopPropagation()); // প্লেয়ারের উপর ক্লিক করলে যেন বন্ধ না হয়
+
     navItems.forEach(item => item.addEventListener('click', (e) => {
         e.preventDefault();
         handleNavigation(e.currentTarget.id);
