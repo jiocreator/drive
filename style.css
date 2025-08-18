@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+.video-player {
+  max-width: 800px;
+  margin: 20px auto;
+  position: relative;
+}
+video {
+  width: 100%;
+  display: block;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.controls button, .controls input, .controls select {
+  margin: 0 5px;
+}
+#seekBar, #volumeBar {
+  flex-grow: 1;
+}
+body.dark-mode {
+  background: #222;
+  color: #fff;
+}
+body.light-mode {
+  background: #fff;
+  color: #000;
+}
+@media (max-width: 600px) {
+  .controls {
+    flex-wrap: wrap;
+  }
+}
