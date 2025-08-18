@@ -1,57 +1,224 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Drive</title>
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Custom Video Player</title>
+<style>
+body {
+  margin: 0;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#player-container {
+  position: relative;
+  width: 720px;
+  max-width: 100%;
+  background: #000;
+}
+
+/* Video element */
+video {
+  width: 100%;
+  display: block;
+}
+
+/* Controls Bar */
+#controls {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  box-sizing: border-box;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+/* Buttons */
+button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+button:hover { color: #0af; }
+
+/* Progress Bar */
+#progress-container {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,0.3);
+  margin: 0 10px;
+  cursor: pointer;
+  position: relative;
+}
+
+#progress {
+  width: 0%;
+  height: 100%;
+  background: #0af;
+}
+
+/* Skip Animation */
+.skip-animation {
+  position: absolute;
+  top: 50%;
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 10px black;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.skip-left { left: 20%; }
+.skip-right { right: 20%; }
+.show { opacity: 1 !important; }
+
+/* Gesture Overlay */
+.gesture-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 2;
+}
+</style>
 </head>
 <body>
 
-    <header>
-        <h1 id="header-title">Home</h1>
-        <div class="view-controls">
-            <button id="grid-view-btn" class="active" title="Grid View"><i class="fas fa-th-large"></i></button>
-            <button id="list-view-btn" title="List View"><i class="fas fa-list"></i></button>
-        </div>
-    </header>
+<div id="player-container">
+  <video id="video" poster="thumbnail.jpg">
+    <source src="https://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+    <track label="English" kind="subtitles" srclang="en" src="subtitles.vtt" default>
+  </video>
 
-    <main id="content-container" class="grid-view">
-        <div class="spinner"></div>
-    </main>
+  <!-- Gesture overlay -->
+  <div class="gesture-overlay" id="gesture"></div>
 
-    <div id="player-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button id="close-modal-btn" class="close-btn" title="Close">&times;</button>
-            <iframe id="iframe-player" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            <video id="video-js-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"></video>
-        </div>
+  <!-- Skip Animation -->
+  <div id="skip-left" class="skip-animation skip-left">⏪ 10s</div>
+  <div id="skip-right" class="skip-animation skip-right">10s ⏩</div>
+
+  <!-- Custom Controls -->
+  <div id="controls">
+    <button id="playpause">▶️</button>
+    <button id="backward">⏪ 10s</button>
+    <button id="forward">10s ⏩</button>
+    <div id="progress-container">
+      <div id="progress"></div>
     </div>
+    <button id="pip">PiP</button>
+    <button id="fullscreen">⛶</button>
+  </div>
+</div>
 
-    <footer>
-        <nav class="bottom-nav">
-            <a href="#" id="home-btn" class="nav-item active">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </a>
-            <a href="#" id="star-btn" class="nav-item">
-                <i class="fas fa-star"></i>
-                <span>Star</span>
-            </a>
-            <a href="#" id="shared-btn" class="nav-item">
-                <i class="fas fa-share-alt"></i>
-                <span>Share</span>
-            </a>
-            <a href="#" id="files-btn" class="nav-item">
-                <i class="fas fa-folder"></i>
-                <span>Files</span>
-            </a>
-        </nav>
-    </footer>
+<script>
+const video = document.getElementById('video');
+const playpause = document.getElementById('playpause');
+const forwardBtn = document.getElementById('forward');
+const backwardBtn = document.getElementById('backward');
+const progress = document.getElementById('progress');
+const progressContainer = document.getElementById('progress-container');
+const fullscreenBtn = document.getElementById('fullscreen');
+const pipBtn = document.getElementById('pip');
+const gesture = document.getElementById('gesture');
+const skipLeftAnim = document.getElementById('skip-left');
+const skipRightAnim = document.getElementById('skip-right');
 
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script src="script.js"></script>
+// Play/Pause
+playpause.addEventListener('click', () => {
+  if(video.paused) { video.play(); playpause.textContent = "⏸️"; }
+  else { video.pause(); playpause.textContent = "▶️"; }
+});
+
+// Forward / Backward
+forwardBtn.addEventListener('click', () => { skipForward(); });
+backwardBtn.addEventListener('click', () => { skipBackward(); });
+
+// Update progress bar
+video.addEventListener('timeupdate', () => {
+  const percent = (video.currentTime / video.duration) * 100;
+  progress.style.width = percent + '%';
+});
+
+// Seek
+progressContainer.addEventListener('click', (e) => {
+  const rect = progressContainer.getBoundingClientRect();
+  const pos = (e.clientX - rect.left) / rect.width;
+  video.currentTime = pos * video.duration;
+});
+
+// Fullscreen
+fullscreenBtn.addEventListener('click', () => {
+  if(!document.fullscreenElement) {
+    document.getElementById('player-container').requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+});
+
+// PiP
+pipBtn.addEventListener('click', async () => {
+  if(document.pictureInPictureElement) {
+    await document.exitPictureInPicture();
+  } else {
+    if(video !== document.pictureInPictureElement){
+      await video.requestPictureInPicture();
+    }
+  }
+});
+
+// Skip functions
+function skipForward() {
+  video.currentTime += 10;
+  showAnimation('right');
+}
+function skipBackward() {
+  video.currentTime -= 10;
+  showAnimation('left');
+}
+function showAnimation(side) {
+  const el = side==='right'? skipRightAnim : skipLeftAnim;
+  el.classList.add('show');
+  setTimeout(()=> el.classList.remove('show'), 600);
+}
+
+// Gesture double-tap (MX style)
+let lastTap = 0;
+gesture.addEventListener('click', (e)=>{
+  const rect = gesture.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const currentTime = new Date().getTime();
+
+  if(currentTime - lastTap < 300){
+    if(x < rect.width/2) skipBackward();
+    else skipForward();
+  } else {
+    if(video.paused) { video.play(); playpause.textContent="⏸️"; }
+    else { video.pause(); playpause.textContent="▶️"; }
+  }
+  lastTap = currentTime;
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e)=>{
+  if(e.code==="Space"){ if(video.paused){video.play(); playpause.textContent="⏸️";} else{video.pause(); playpause.textContent="▶️";} }
+  if(e.code==="ArrowRight") skipForward();
+  if(e.code==="ArrowLeft") skipBackward();
+  if(e.code==="KeyF") fullscreenBtn.click();
+  if(e.code==="KeyP") pipBtn.click();
+});
+</script>
 </body>
 </html>
