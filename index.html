@@ -1,17 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clappr Video Player</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.css">
-  <link rel="stylesheet" href="styles.css">
+    <title>Flowplayer with Rounded Corners</title>
+    <!-- Flowplayer CSS -->
+    <link rel="stylesheet" href="https://releases.flowplayer.com/7.2.7/skin/skin.css">
+    <style>
+        /* প্লেয়ারের জন্য কাস্টম CSS */
+        .fp-player {
+            border: 2px solid #000; /* বর্ডার রিডিউস করা */
+            border-radius: 15px; /* গোলাকার কর্নার */
+            overflow: hidden; /* বর্ডারের বাইরের অংশ লুকানো */
+            background-color: #000; /* পটভূমি কালো */
+        }
+        .fp-controls {
+            background-color: rgba(0, 0, 0, 0.7); /* কন্ট্রোল বারের পটভূমি */
+        }
+    </style>
 </head>
-<body class="dark-mode">
-  <div id="player"></div>
-  <button id="themeToggle">Dark/Light Mode</button>
-  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/clappr-level-selector@latest/dist/level-selector.min.js"></script>
-  <script src="script.js"></script>
+<body>
+    <!-- ভিডিও প্লেয়ারের জন্য কন্টেইনার -->
+    <div id="player" style="width: 640px; height: 360px;"></div>
+
+    <!-- Flowplayer এবং HLS.js স্ক্রিপ্ট -->
+    <script src="https://releases.flowplayer.com/7.2.7/flowplayer.min.js"></script>
+    <script src="https://releases.flowplayer.com/hlsjs/flowplayer.hlsjs.min.js"></script>
+    <script>
+        // Flowplayer সেটআপ
+        flowplayer("#player", {
+            clip: {
+                sources: [
+                    { type: "application/x-mpegURL", src: "https://stream.mux.com/MTeIIbL00lWZ0100gWMxaRtWg7tUBzyOODjsVCKVKmOxME.m3u8" }
+                ]
+            }
+        });
+    </script>
 </body>
 </html>
