@@ -1,53 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Drive</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #fafafa; }
-    header { background: #4285f4; color: white; text-align: center; padding: 10px; font-size: 18px; font-weight: bold; }
-    .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 15px; }
-    .file-card { background: white; border-radius: 10px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
-    .file-card:hover { transform: scale(1.05); }
-    .file-icon { font-size: 60px; color: #d93025; }
-    .filename { margin-top: 8px; font-size: 14px; font-weight: bold; color: #333; }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #ccc; display: flex; justify-content: space-around; padding: 8px 0; }
-    .bottom-nav a { text-decoration: none; color: #555; font-size: 14px; display: flex; flex-direction: column; align-items: center; }
-    .bottom-nav a.active { color: #4285f4; font-weight: bold; }
-    .material-icons { font-size: 24px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Drive</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 <body>
 
-<header>📂 My Drive</header>
+    <header>
+        <h1>My Drive</h1>
+        <div class="view-controls">
+            <button id="grid-view-btn" class="active"><i class="fas fa-th-large"></i></button>
+            <button id="list-view-btn"><i class="fas fa-list"></i></button>
+        </div>
+    </header>
 
-<div class="file-grid">
-  <div class="file-card">
-    <span class="material-icons file-icon">video_file</span>
-    <div class="filename">Dirilis Ertugrul - S02E20.mp4</div>
-  </div>
-  <div class="file-card">
-    <span class="material-icons file-icon">video_file</span>
-    <div class="filename">Dirilis Ertugrul - S02E19.mp4</div>
-  </div>
-  <div class="file-card">
-    <span class="material-icons file-icon">video_file</span>
-    <div class="filename">Dirilis Ertugrul - S02E18.mp4</div>
-  </div>
-  <div class="file-card">
-    <span class="material-icons file-icon">video_file</span>
-    <div class="filename">Dirilis Ertugrul - S02E17.mp4</div>
-  </div>
-</div>
+    <main id="content-container" class="grid-view">
+        </main>
 
-<div class="bottom-nav">
-  <a href="#" class="active"><span class="material-icons">home</span><span>Home</span></a>
-  <a href="#"><span class="material-icons">star</span><span>Starred</span></a>
-  <a href="#"><span class="material-icons">people</span><span>Shared</span></a>
-  <a href="#"><span class="material-icons">folder</span><span>Files</span></a>
-</div>
+    <footer>
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-star"></i>
+                <span>Star</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Shared</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-folder"></i>
+                <span>Files</span>
+            </a>
+        </nav>
+    </footer>
 
+    <script src="script.js"></script>
 </body>
 </html>
