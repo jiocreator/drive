@@ -3,31 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Custom Video Player</title>
+  <title>Video.js Custom Player</title>
+  <link href="https://vjs.zencdn.net/8.10.0/video-js.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body class="dark-mode">
   <div class="video-player">
-    <video id="video" src="video.mp4" poster="thumbnail.jpg"></video>
-    <div class="controls">
-      <button id="playPause"><i class="fas fa-play"></i></button>
-      <button id="skipBackward"><i class="fas fa-backward"></i> 10s</button>
-      <button id="skipForward"><i class="fas fa-forward"></i> 10s</button>
-      <input type="range" id="seekBar" value="0" max="100">
-      <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
-      <input type="range" id="volumeBar" value="1" min="0" max="1" step="0.1">
-      <button id="mute"><i class="fas fa-volume-up"></i></button>
-      <select id="qualitySelector">
-        <option value="360p">360p</option>
-        <option value="720p">720p</option>
-        <option value="1080p">1080p</option>
-      </select>
-      <button id="fullscreen"><i class="fas fa-expand"></i></button>
-      <button id="themeToggle">Dark/Light</button>
-    </div>
+    <video id="video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
+      <source src="https://www.dropbox.com/scl/fi/he6fzba4grx7mchmd6yhg/Alp-Arslan-The-Great-Seljuk-S02E75.mp4?rlkey=tlrsbh5m4k2px6c2fvyxivbjc&raw=1" type="video/mp4">
+      <!-- HLS স্ট্রিমের জন্য -->
+      <!-- <source src="https://example.com/playlist.m3u8" type="application/x-mpegURL"> -->
+    </video>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@latest/dist/videojs-contrib-quality-levels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-hotkeys@latest/videojs.hotkeys.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@latest/dist/videojs-mobile-ui.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
