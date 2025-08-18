@@ -3,22 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video.js Custom Player</title>
-  <link href="https://vjs.zencdn.net/8.10.0/video-js.min.css" rel="stylesheet">
+  <title>Clappr Video Player</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="dark-mode">
-  <div class="video-player">
-    <video id="video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
-      <source src="https://www.dropbox.com/scl/fi/he6fzba4grx7mchmd6yhg/Alp-Arslan-The-Great-Seljuk-S02E75.mp4?rlkey=tlrsbh5m4k2px6c2fvyxivbjc&raw=1" type="video/mp4">
-      <!-- HLS স্ট্রিমের জন্য -->
-      <!-- <source src="https://example.com/playlist.m3u8" type="application/x-mpegURL"> -->
-    </video>
-  </div>
-  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@latest/dist/videojs-contrib-quality-levels.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/videojs-hotkeys@latest/videojs.hotkeys.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@latest/dist/videojs-mobile-ui.min.js"></script>
+  <div id="player"></div>
+  <button id="themeToggle">Dark/Light Mode</button>
+  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/clappr-level-selector@latest/dist/level-selector.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
