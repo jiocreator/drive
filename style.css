@@ -1,0 +1,131 @@
+/* বেসিক স্টাইল */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f0f2f5;
+    color: #333;
+    padding-bottom: 70px; /* ফুটারের জন্য জায়গা ছাড়া */
+}
+
+/* হেডার স্টাইল */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.view-controls button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #888;
+    margin-left: 10px;
+}
+
+.view-controls button.active {
+    color: #0d6efd; /* অ্যাক্টিভ বাটনের রঙ */
+}
+
+/* কন্টেন্ট কন্টেইনার */
+main {
+    padding: 15px;
+}
+
+/* --- গ্রিড ভিউ স্টাইল --- */
+.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.grid-view .content-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.grid-view .item-icon {
+    font-size: 50px;
+    color: #7b2cbf; /* আইকনের রঙ */
+    margin-bottom: 10px;
+}
+
+.grid-view .item-name {
+    font-size: 14px;
+    word-break: break-word;
+}
+
+
+/* --- লিস্ট ভিউ স্টাইল --- */
+.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.list-view .content-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.list-view .item-icon {
+    font-size: 24px;
+    color: #c92a2a; /* লিস্ট ভিউতে আইকনের রঙ */
+    margin-right: 15px;
+}
+
+.list-view .item-name {
+    font-size: 16px;
+}
+
+/* নিচের নেভিগেশন বার */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
+    padding: 5px 0;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #888;
+    padding: 5px;
+}
+
+.nav-item i {
+    font-size: 20px;
+}
+
+.nav-item span {
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.nav-item.active {
+    color: #0d6efd; /* অ্যাক্টিভ আইকনের রঙ */
+}
+
