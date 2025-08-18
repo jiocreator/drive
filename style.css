@@ -2,12 +2,21 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
-.video-player {
+#player {
   max-width: 800px;
   margin: 20px auto;
 }
-.video-js .vjs-control-bar {
+.clappr-player {
+  position: relative;
+}
+.clappr-player .media-control {
   background: rgba(0, 0, 0, 0.7);
+}
+#themeToggle {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  cursor: pointer;
 }
 body.dark-mode {
   background: #222;
@@ -18,7 +27,7 @@ body.light-mode {
   color: #000;
 }
 @media (max-width: 600px) {
-  .video-js .vjs-control-bar {
+  .clappr-player .media-control {
     font-size: 12px;
   }
 }
