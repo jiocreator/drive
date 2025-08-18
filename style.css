@@ -4,7 +4,7 @@ body {
     margin: 0;
     background-color: #f0f2f5;
     color: #333;
-    padding-bottom: 70px; /* ফুটারের জন্য জায়গা ছাড়া */
+    padding-bottom: 70px;
 }
 
 /* হেডার স্টাইল */
@@ -32,7 +32,7 @@ header h1 {
 }
 
 .view-controls button.active {
-    color: #0d6efd; /* অ্যাক্টিভ বাটনের রঙ */
+    color: #0d6efd;
 }
 
 /* কন্টেন্ট কন্টেইনার */
@@ -58,15 +58,24 @@ main {
 
 .grid-view .item-icon {
     font-size: 50px;
-    color: #7b2cbf; /* আইকনের রঙ */
     margin-bottom: 10px;
 }
+
+/* ফোল্ডারের জন্য আলাদা রঙ */
+.grid-view .folder-icon {
+    color: #ffca28; /* হলুদ রঙ */
+}
+
+/* ফাইলের জন্য আলাদা রঙ */
+.grid-view .file-icon {
+    color: #7b2cbf; /* বেগুনি রঙ */
+}
+
 
 .grid-view .item-name {
     font-size: 14px;
     word-break: break-word;
 }
-
 
 /* --- লিস্ট ভিউ স্টাইল --- */
 .list-view {
@@ -86,13 +95,35 @@ main {
 
 .list-view .item-icon {
     font-size: 24px;
-    color: #c92a2a; /* লিস্ট ভিউতে আইকনের রঙ */
     margin-right: 15px;
+}
+
+/* ফোল্ডারের জন্য আলাদা রঙ */
+.list-view .folder-icon {
+    color: #ffca28;
+}
+
+/* ফাইলের জন্য আলাদা রঙ */
+.list-view .file-icon {
+    color: #c92a2a;
 }
 
 .list-view .item-name {
     font-size: 16px;
 }
+
+/* লিস্ট ভিউতে ফোল্ডারের তথ্যের জন্য */
+.item-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-details .modified-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
 
 /* নিচের নেভিগেশন বার */
 .bottom-nav {
@@ -126,6 +157,5 @@ main {
 }
 
 .nav-item.active {
-    color: #0d6efd; /* অ্যাক্টিভ আইকনের রঙ */
+    color: #0d6efd;
 }
-
