@@ -1,17 +1,18 @@
 :root {
     --primary-color: #0d6efd;
     --background-color: #f0f2f5;
-    --card-bg-color: #fff;
+    --card-bg-color: #ffffff;
     --text-color: #333;
     --icon-color: #888;
+    --star-color: #ffd700;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     background-color: var(--background-color);
     color: var(--text-color);
-    padding-bottom: 70px;
+    padding-bottom: 70px; /* নিচের নেভিগেশন বারের জন্য জায়গা */
 }
 
 header {
@@ -42,24 +43,31 @@ main { padding: 15px; }
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
 }
-.grid-view .content-item {
+.content-item {
     background-color: var(--card-bg-color);
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     cursor: pointer;
-    overflow: hidden; /* থাম্বনেইলের জন্য */
+    overflow: hidden;
     position: relative;
+    user-select: none; /* লং প্রেসের সময় লেখা সিলেক্ট হওয়া বন্ধ করে */
+    transition: transform 0.2s ease-in-out;
+}
+.content-item:active {
+    transform: scale(0.96);
 }
 .grid-view .item-thumbnail {
     width: 100%;
     height: 100px;
     object-fit: cover;
     background-color: #eee;
+    border-bottom: 1px solid #eee;
 }
 .grid-view .item-name {
     font-size: 14px;
     padding: 8px;
     word-break: break-word;
+    color: var(--text-color);
 }
 
 /* --- List View --- */
@@ -67,11 +75,7 @@ main { padding: 15px; }
 .list-view .content-item {
     display: flex;
     align-items: center;
-    background-color: var(--card-bg-color);
-    border-radius: 8px;
     padding: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    position: relative;
 }
 .list-view .item-icon {
     font-size: 24px;
@@ -82,25 +86,24 @@ main { padding: 15px; }
 .list-view .item-name { font-size: 16px; }
 .list-view .modified-date { font-size: 12px; color: var(--icon-color); margin-top: 2px; }
 
-/* Star Icon on Items */
+/* Star Icon */
 .star-indicator {
     position: absolute;
     top: 8px;
     right: 8px;
-    color: #ffd700;
+    color: var(--star-color);
     font-size: 18px;
-    text-shadow: 0 0 3px black;
+    text-shadow: 0 0 4px rgba(0,0,0,0.5);
+    pointer-events: none; /* স্টারের উপর ক্লিক করলে যেন নিচের আইটেমটিই সিলেক্ট হয় */
 }
 
 /* --- Player Modal --- */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: none; /* ডিফল্টভাবে লুকানো থাকবে */
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -109,37 +112,34 @@ main { padding: 15px; }
     position: relative;
     width: 90%;
     max-width: 800px;
-    height: 0;
-    padding-bottom: 50.25%; /* 16:9 aspect ratio */
+    aspect-ratio: 16 / 9; /* ভিডিওর জন্য ১৬:৯ অনুপাত */
     background-color: #000;
 }
 .modal-content iframe, .modal-content .video-js {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
 }
 .close-btn {
     position: absolute;
-    top: -35px;
-    right: 0;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 30px;
-    cursor: pointer;
+    top: -40px; right: 0;
+    background: none; border: none;
+    color: white; font-size: 35px;
+    cursor: pointer; line-height: 1;
 }
 
 /* --- Bottom Nav --- */
 .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
     display: flex; justify-content: space-around;
-    background-color: #ffffff; border-top: 1px solid #ddd; padding: 5px 0;
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
+    padding: 8px 0;
 }
 .nav-item {
     display: flex; flex-direction: column; align-items: center;
-    text-decoration: none; color: var(--icon-color); padding: 5px;
+    text-decoration: none; color: var(--icon-color);
 }
 .nav-item i { font-size: 20px; }
 .nav-item span { font-size: 12px; margin-top: 4px; }
@@ -152,4 +152,3 @@ main { padding: 15px; }
     animation: spin 1s linear infinite; margin: 50px auto;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
