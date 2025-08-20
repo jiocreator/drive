@@ -3,11 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flowplayer M3U Playlist</title>
+    <title>Video Playlist Player</title>
 
-    <link rel="stylesheet" href="https://cdn.flowplayer.com/releases/native/stable/style/flowplayer.css">
-    
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
+    <style>
+        /* --- General Styles --- */
+        :root {
+            --primary-color: #00aaff;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-light: #f0f0f0;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+        }
+
+        header {
+            padding: 20px 5%;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid #333;
+            text-align: center;
+        }
+
+        /* --- Custom Select Dropdown --- */
+        .custom-select-wrapper {
+            position: relative;
+            max-width: 300px;
+            margin: 20px auto 0;
+        }
+        .select-trigger {
+            padding: 12px 15px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .select-trigger::after { content: '▼'; font-size: 12px; }
+        .custom-options {
+            position: absolute;
+            top: 110%; left: 0; right: 0;
+            background-color: #2a2a2a;
+            border: 1px solid #444; border-radius: 6px;
+            z-index: 10; display: none;
+            max-height: 200px; overflow-y: auto;
+        }
+        .custom-option { padding: 12px 15px; }
+        .custom-option:hover { background-color: var(--primary-color); }
+        .custom-select.open .custom-options { display: block; }
+
+        /* --- Video Grid --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 5%;
+        }
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .video-card:hover { transform: translateY(-5px); }
+        
+        /* --- 16:9 Thumbnail --- */
+        .thumbnail-container {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Ratio */
+            background-color: #000;
+        }
+        .thumbnail-container img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        .card-title {
+            padding: 15px; font-weight: bold;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* --- Player Modal --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-content { position: relative; width: 90%; max-width: 800px; }
+        .close-modal {
+            position: absolute; top: -40px; right: -5px;
+            background: none; border: none; color: white;
+            font-size: 35px; cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
@@ -16,27 +115,161 @@
         <div class="custom-select-wrapper">
             <div class="custom-select">
                 <div class="select-trigger"><span>All Categories</span></div>
-                <div class="custom-options">
-                    </div>
+                <div class="custom-options"></div>
             </div>
         </div>
     </header>
     
     <main>
         <div id="video-grid" class="grid-container">
-            </div>
+             <p>Loading Playlist...</p>
+        </div>
     </main>
 
     <div id="player-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="close-modal">&times;</button>
-            <div id="player-container"></div>
+            <video id="player" playsinline controls></video>
         </div>
     </div>
 
-    <script src="https://cdn.flowplayer.com/releases/native/stable/flowplayer.min.js"></script>
-    
-    <script src="script.js"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // *** আপনার M3U প্লেলিস্টের লিংক এখানে দিন ***
+            const m3uUrl = 'https://iptv-org.github.io/iptv/countries/bd.m3u'; 
+
+            // DOM এলিমেন্ট নির্বাচন
+            const grid = document.getElementById('video-grid');
+            const modal = document.getElementById('player-modal');
+            const videoElement = document.getElementById('player');
+            const closeModalBtn = document.querySelector('.close-modal');
+            const customSelect = document.querySelector('.custom-select');
+            const selectTrigger = document.querySelector('.select-trigger span');
+            const optionsContainer = document.querySelector('.custom-options');
+
+            let allVideos = [];
+            let player;
+
+            const fetchM3U = async () => {
+                try {
+                    const response = await fetch(m3uUrl);
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    const data = await response.text();
+
+                    const lines = data.trim().split('\n');
+                    const videos = [];
+                    let currentVideo = {};
+
+                    for (const line of lines) {
+                        if (line.startsWith('#EXTINF:')) {
+                            const nameMatch = line.match(/tvg-name="([^"]*)"/);
+                            const logoMatch = line.match(/tvg-logo="([^"]*)"/);
+                            const groupMatch = line.match(/group-title="([^"]*)"/);
+                            
+                            currentVideo = {
+                                name: nameMatch ? nameMatch[1].trim() : 'Untitled',
+                                thumbnail: logoMatch ? logoMatch[1] : '',
+                                category: groupMatch ? groupMatch[1] : 'Uncategorized'
+                            };
+                        } else if (line.trim() && !line.startsWith('#')) {
+                            if (currentVideo.name) {
+                                currentVideo.videoLink = line.trim();
+                                videos.push(currentVideo);
+                                currentVideo = {};
+                            }
+                        }
+                    }
+                    allVideos = videos;
+                    if (allVideos.length > 0) {
+                        populateCategories();
+                        renderGrid();
+                    } else {
+                         grid.innerHTML = '<p>No valid video streams found in the playlist.</p>';
+                    }
+                } catch (error) {
+                    grid.innerHTML = `<p style="color: #ff5555;">Error: Could not load the playlist. Please check the M3U link and your network connection. (Details: ${error.message})</p>`;
+                    console.error("Playlist Fetch Error:", error);
+                }
+            };
+
+            const renderGrid = (category = 'All Categories') => {
+                grid.innerHTML = '';
+                const videosToRender = (category === 'All Categories')
+                    ? allVideos
+                    : allVideos.filter(v => v.category === category);
+
+                if (videosToRender.length === 0) {
+                    grid.innerHTML = "<p>No videos in this category.</p>";
+                    return;
+                }
+
+                videosToRender.forEach(video => {
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.dataset.videoLink = video.videoLink;
+                    card.innerHTML = `
+                        <div class="thumbnail-container">
+                            <img src="${video.thumbnail}" alt="${video.name}" onerror="this.src='https://via.placeholder.com/400x225.png?text=No+Image'; this.onerror=null;">
+                        </div>
+                        <h3 class="card-title">${video.name}</h3>
+                    `;
+                    grid.appendChild(card);
+                });
+            };
+
+            const populateCategories = () => {
+                const categories = ['All Categories', ...new Set(allVideos.map(v => v.category).sort())];
+                optionsContainer.innerHTML = '';
+                categories.forEach(category => {
+                    const option = document.createElement('div');
+                    option.className = 'custom-option';
+                    option.textContent = category;
+                    option.dataset.value = category;
+                    optionsContainer.appendChild(option);
+                });
+            };
+            
+            // Player চালু করা
+            player = new Plyr(videoElement);
+
+            // ইভেন্ট হ্যান্ডলার
+            customSelect.addEventListener('click', (e) => {
+                if (e.target.classList.contains('custom-option')) {
+                    const selectedCategory = e.target.dataset.value;
+                    selectTrigger.textContent = selectedCategory;
+                    renderGrid(selectedCategory);
+                }
+                customSelect.classList.toggle('open');
+            });
+
+            grid.addEventListener('click', (e) => {
+                const card = e.target.closest('.video-card');
+                if (card) {
+                    const videoUrl = card.dataset.videoLink;
+                    modal.classList.remove('hidden');
+                    if (Hls.isSupported()) {
+                        const hls = new Hls();
+                        hls.loadSource(videoUrl);
+                        hls.attachMedia(videoElement);
+                    } else {
+                        videoElement.src = videoUrl;
+                    }
+                    player.play();
+                }
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                player.stop();
+            });
+
+            // শুরু করা
+            fetchM3U();
+        });
+    </script>
 
 </body>
 </html>
