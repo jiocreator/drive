@@ -1,38 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
-    <title>Flowplayer with Rounded Corners</title>
-    <!-- Flowplayer CSS -->
-    <link rel="stylesheet" href="https://releases.flowplayer.com/7.2.7/skin/skin.css">
-    <style>
-        /* প্লেয়ারের জন্য কাস্টম CSS */
-        .fp-player {
-            border: 2px solid #000; /* বর্ডার রিডিউস করা */
-            border-radius: 15px; /* গোলাকার কর্নার */
-            overflow: hidden; /* বর্ডারের বাইরের অংশ লুকানো */
-            background-color: #000; /* পটভূমি কালো */
-        }
-        .fp-controls {
-            background-color: rgba(0, 0, 0, 0.7); /* কন্ট্রোল বারের পটভূমি */
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowplayer M3U Playlist</title>
+
+    <link rel="stylesheet" href="https://cdn.flowplayer.com/releases/native/stable/style/flowplayer.css">
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ভিডিও প্লেয়ারের জন্য কন্টেইনার -->
-    <div id="player" style="width: 640px; height: 360px;"></div>
 
-    <!-- Flowplayer এবং HLS.js স্ক্রিপ্ট -->
-    <script src="https://releases.flowplayer.com/7.2.7/flowplayer.min.js"></script>
-    <script src="https://releases.flowplayer.com/hlsjs/flowplayer.hlsjs.min.js"></script>
-    <script>
-        // Flowplayer সেটআপ
-        flowplayer("#player", {
-            clip: {
-                sources: [
-                    { type: "application/x-mpegURL", src: "https://stream.mux.com/MTeIIbL00lWZ0100gWMxaRtWg7tUBzyOODjsVCKVKmOxME.m3u8" }
-                ]
-            }
-        });
-    </script>
+    <header>
+        <h1>My Video Collection</h1>
+        <div class="custom-select-wrapper">
+            <div class="custom-select">
+                <div class="select-trigger"><span>All Categories</span></div>
+                <div class="custom-options">
+                    </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div id="video-grid" class="grid-container">
+            </div>
+    </main>
+
+    <div id="player-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div id="player-container"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.flowplayer.com/releases/native/stable/flowplayer.min.js"></script>
+    
+    <script src="script.js"></script>
+
 </body>
 </html>
